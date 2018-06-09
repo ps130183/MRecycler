@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.ps.mrecycler.GridLayoutActivity">
+
+    <com.ps.mrcyclerview.MRecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:lmType="staggeredGrid"
+        app:orientation="horizontal"
+        app:spanCount="3"
+        app:dividerWidth="5"
+        app:dividerColor="#ffff0000">
+
+    </com.ps.mrcyclerview.MRecyclerView>
+
+</FrameLayout>
