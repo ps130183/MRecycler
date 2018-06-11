@@ -21,15 +21,67 @@ Step 2. Add the dependency<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br> 
 
 # 例如
+1、布局管理器默认是LinearLayoutManager,默认方向vertical,默认分割线宽度1dp
 ···java<br>
-<com.ps.mrcyclerview.MRecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:lmType="linear"
-        app:orientation="vertical"
-        app:dividerColor="#3da8ef"
-        app:dividerWidth="3">
 
-    </com.ps.mrcyclerview.MRecyclerView>
+        <com.ps.mrcyclerview.MRecyclerVie                
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </com.ps.mrcyclerview.MRecyclerView>
+        
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.addContentLayout(R.layout.item_content, new ItemViewConvert() {
+            @Override
+            public void convert(@NonNull BViewHolder holder, Object mData, int position) {
+                holder.addRippleEffectOnClick();
+                ContentEntity entity = (ContentEntity) mData;
+                holder.setText(R.id.name,entity.getName());
+            }
+        }).addContentLayout(R.layout.item_content2, new ItemViewConvert() {
+            @Override
+            public void convert(@NonNull BViewHolder holder, Object mData, int position) {
+                ContentEntity2 entity = (ContentEntity2) mData;
+                holder.setText(R.id.name,entity.getName());
+            }
+        }).addHeaderLayout(R.layout.header_view, new ItemViewConvert() {
+            @Override
+            public void convert(@NonNull BViewHolder holder, Object mData, int position) {
+
+            }
+        }).create();
+        recyclerView.addLoadMoreListener(new LoadMoreListener() {
+            @Override
+            public void loadMore(int nextPage) {
+                if (nextPage == 2){
+                    recyclerView.loadMoreError();
+                } else {
+                    recyclerView.update(getResult(nextPage));
+                }
+
+            }
+        });
+
+        recyclerView.addClickItemListener(new OnClickItemListener() {
+            @Override
+            public void clickItem(Object mData, int position) {
+                Toast.makeText(DefaultActivity.this,"单击事件： " + position,Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        recyclerView.addLongClickItemListener(new OnLongClickItemListener() {
+            @Override
+            public void longClickItem(Object mData, int position) {
+                Toast.makeText(DefaultActivity.this,"长按事件： " + position,Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        recyclerView.addLoadMoreErrorListener(new OnLoadMoreErrorListener() {
+            @Override
+            public void loadMoreError(int nextPage) {
+                recyclerView.update(getResult(nextPage));
+            }
+        });
+        recyclerView.update(getResult(1));
   
