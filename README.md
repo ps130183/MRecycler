@@ -21,15 +21,35 @@ Step 2. Add the dependency<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br> 
 
 # 自定义属性
-|Tables         | Are           | Cool  |
+|属性名         | 描述           | 默认值  |
 | ------------- |:-------------:| -----:|
-| col 3 is      | right-aligned | $1600 |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
+| loadMoreRes   | 加载更多的布局文件 | mr_load_more |
+| loadMoreFinishRes      | 所有数据加载完以后显示的内容      |   mr_load_more_finish |
+| loadMoreErrorRes | 加载更多失败时显示的内容，有单独的点击事件监听，在加载失败时点击重新加载      |    mr_load_more_error |
+| emptyRes | 列表数据为空时，展示的内容      |    mr_empty |
+| lmType | 布局管理器类型，包括：linear,grid,staggeredGrid      |    linear |
+| orientation | 布局管理器的布局方向，包括vertical,horizontal      |    vertical |
+| spanCount | lmType!=linear时，每行所包含的item数量      |    2 |
+| dividerWidth | 分割线的宽度      |    1dp |
+| dividerColor | 分割线的颜色      |    0xffefeff4 |
 
+注意：
+1、以上属性需要在xml布局文件中设置
+2、分割线的颜色 可以直接取资源文件中 颜色的ID值
+3、分割线的宽度是以dp为单位，但是设置时不需要加dp
+
+```java
+        <com.ps.mrcyclerview.MRecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:lmType="linear"
+        app:orientation="vertical"
+        app:dividerColor="@color/dividerColor"
+        app:dividerWidth="3"/>
 # 例如
 1、布局管理器默认是LinearLayoutManager,默认方向vertical,默认分割线宽度1dp<br>
-···java<br>
+```java<br>
 
         <com.ps.mrcyclerview.MRecyclerVie                
             android:id="@+id/recyclerView"
