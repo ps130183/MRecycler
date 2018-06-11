@@ -33,12 +33,12 @@ Step 2. Add the dependency<br>
 | dividerWidth | 分割线的宽度      |    1dp |
 | dividerColor | 分割线的颜色      |    0xffefeff4 |
 
-注意：
-1、以上属性需要在xml布局文件中设置
-2、分割线的颜色 可以直接取资源文件中 颜色的ID值
-3、分割线的宽度是以dp为单位，但是设置时不需要加dp
+注意：<br>
+1、以上属性需要在xml布局文件中设置<br>
+2、分割线的颜色 可以直接取资源文件中 颜色的ID值<br>
+3、分割线的宽度是以dp为单位，但是设置时不需要加dp<br>
 
-```java
+
         <com.ps.mrcyclerview.MRecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
@@ -47,6 +47,7 @@ Step 2. Add the dependency<br>
         app:orientation="vertical"
         app:dividerColor="@color/dividerColor"
         app:dividerWidth="3"/>
+       
 # 例如
 1、布局管理器默认是LinearLayoutManager,默认方向vertical,默认分割线宽度1dp<br>
 ```java<br>
