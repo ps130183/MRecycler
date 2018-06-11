@@ -112,4 +112,6 @@ Step 2. Add the dependency<br>
             }
         });
         recyclerView.update(getResult(1));
-  
+  -----
+  # 感谢
+  最后感谢 [yanyusong的分割线]{https://github.com/yanyusong/Y_DividerItemDecoration}
