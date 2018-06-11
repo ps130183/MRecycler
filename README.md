@@ -20,6 +20,13 @@ Step 2. Add the dependency<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;implementation 'com.github.ps130183:MRecycler:1.0'<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br> 
 
+# 自定义属性
+|Tables         | Are           | Cool  |
+| ------------- |:-------------:| -----:|
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |
+
 # 例如
 1、布局管理器默认是LinearLayoutManager,默认方向vertical,默认分割线宽度1dp<br>
 ···java<br>
