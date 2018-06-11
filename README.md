@@ -21,7 +21,7 @@ Step 2. Add the dependency<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br> 
 
 # 例如
-1、布局管理器默认是LinearLayoutManager,默认方向vertical,默认分割线宽度1dp
+1、布局管理器默认是LinearLayoutManager,默认方向vertical,默认分割线宽度1dp<br>
 ···java<br>
 
         <com.ps.mrcyclerview.MRecyclerVie                
