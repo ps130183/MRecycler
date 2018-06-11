@@ -8,7 +8,7 @@ MrecyclerView介绍
 目前功能除了设置可以直接设置数据外还包括设置多个Header/Footer、上拉加载更多，然后控件整合了linearLayoutManager、GridLayoutManager、StaggeredGridLayoutManager，只需要简单的几个设置就可以实现列表、网格以及瀑布流。并且集成了各种布局管理的分割线。
 
 # 感谢
-  非常感谢 [yanyusong的分割线]（https://github.com/yanyusong/Y_DividerItemDecoration）
+  非常感谢 yanyusong的分割线 https://github.com/yanyusong/Y_DividerItemDecoration
 
 # 使用
 Step 1. Add it in your root build.gradle at the end of repositories:<br>
