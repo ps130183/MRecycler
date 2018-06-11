@@ -62,28 +62,28 @@ Step 2. Add the dependency<br>
 
         </com.ps.mrcyclerview.MRecyclerView>
         
-				//实体类需事先ItemDelegate接口，返回的内容是该实体类对应的布局文件的ID
+	//实体类需事先ItemDelegate接口，返回的内容是该实体类对应的布局文件的ID
         public class ContentEntity implements ItemDelegate {
 
-        		private String name;
+        	private String name;
 
-    				public ContentEntity(String name) {
-        				this.name = name;
-    				}
+    		public ContentEntity(String name) {
+        		this.name = name;
+    		}
 
-    				public String getName() {
-        			return name;
-    				}
+    		public String getName() {
+        		return name;
+    		}
 
-    				public void setName(String name) {
-        			this.name = name;
-    				}
+    		public void setName(String name) {
+        		this.name = name;
+    		}
 
-						@Override
-						public int getItemViewRes() {
-								return R.layout.item_content;
-						}
-				}
+		@Override
+		public int getItemViewRes() {
+			return R.layout.item_content;
+		}
+	}
         
 				
         recyclerView = findViewById(R.id.recyclerView);
