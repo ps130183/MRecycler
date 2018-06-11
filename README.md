@@ -21,7 +21,7 @@ Step 2. Add the dependency<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br> 
 
 # 例如
-···java
+···java<br>
 <com.ps.mrcyclerview.MRecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
