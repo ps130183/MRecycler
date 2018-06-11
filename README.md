@@ -9,7 +9,7 @@ MrecyclerView介绍
 
 # 使用
 Step 1. Add it in your root build.gradle at the end of repositories:<br>
-	allprojects {<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allprojects {<br>
 		repositories {<br>
 			...<br>
 			maven { url 'https://jitpack.io' }<br>
