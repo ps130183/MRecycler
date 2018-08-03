@@ -87,26 +87,28 @@ Step 2. Add the dependency<br>
 		}
 	}
         
-				
+	//版本1.1 本次更新引入了泛型和局部刷新的机制
+	private MRecyclerView<ContentEntity> recyclerView;		
         recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.addContentLayout(R.layout.item_content, new ItemViewConvert() {
+        recyclerView.addContentLayout(R.layout.item_content, new ItemViewConvert<ContentEntity>() {
             @Override
-            public void convert(@NonNull BViewHolder holder, Object mData, int position) {
+            public void convert(@NonNull BViewHolder holder, ContentEntity mData, int position, @NonNull List<Object> payloads) {
                 holder.addRippleEffectOnClick();
-                ContentEntity entity = (ContentEntity) mData;
-                holder.setText(R.id.name,entity.getName());
+                holder.setText(R.id.name,mData.getName());
             }
-        }).addContentLayout(R.layout.item_content2, new ItemViewConvert() {
+
+        }).addContentLayout(R.layout.item_content2, new ItemViewConvert<ContentEntity>() {
             @Override
-            public void convert(@NonNull BViewHolder holder, Object mData, int position) {
-                ContentEntity2 entity = (ContentEntity2) mData;
-                holder.setText(R.id.name,entity.getName());
+            public void convert(@NonNull BViewHolder holder, ContentEntity mData, int position, @NonNull List<Object> payloads) {
+                holder.setText(R.id.name,mData.getName());
             }
+
         }).addHeaderLayout(R.layout.header_view, new ItemViewConvert() {
             @Override
-            public void convert(@NonNull BViewHolder holder, Object mData, int position) {
+            public void convert(@NonNull BViewHolder holder, Object mData, int position, @NonNull List payloads) {
 
             }
+
         }).create();
         recyclerView.addLoadMoreListener(new LoadMoreListener() {
             @Override
@@ -114,7 +116,7 @@ Step 2. Add the dependency<br>
                 if (nextPage == 2){
                     recyclerView.loadMoreError();
                 } else {
-                    recyclerView.update(getResult(nextPage));
+                    recyclerView.loadDataOfNextPage(getResult(nextPage));
                 }
 
             }
@@ -137,7 +139,7 @@ Step 2. Add the dependency<br>
         recyclerView.addLoadMoreErrorListener(new OnLoadMoreErrorListener() {
             @Override
             public void loadMoreError(int nextPage) {
-                recyclerView.update(getResult(nextPage));
+                recyclerView.loadDataOfNextPage(getResult(nextPage));
             }
         });
-        recyclerView.update(getResult(1));
+        recyclerView.loadDataOfNextPage(getResult(1));
