@@ -4,16 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ps.mrecycler.DefaultActivity">
+    tools:context="com.ps.mrecycler.SwipeLayoutActivity">
 
     <com.ps.mrcyclerview.MRecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/mrecycler"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:lmType="linear"
-        app:orientation="vertical"
-        app:dividerColor="@color/dividerColor"
-        app:dividerWidth="3">
+        android:layout_height="match_parent"
+        app:adapterType="swipe"
+        app:refresh="true">
 
     </com.ps.mrcyclerview.MRecyclerView>
 

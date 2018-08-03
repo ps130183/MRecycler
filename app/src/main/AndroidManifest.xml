@@ -18,7 +18,8 @@
         </activity>
         <activity android:name=".DefaultActivity" />
         <activity android:name=".GridLayoutActivity" />
-        <activity android:name=".StaggeredGridLayoutActivity"></activity>
+        <activity android:name=".StaggeredGridLayoutActivity" />
+        <activity android:name=".SwipeLayoutActivity"></activity>
     </application>
 
 </manifest>

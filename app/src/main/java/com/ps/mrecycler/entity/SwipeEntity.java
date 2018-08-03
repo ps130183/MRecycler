@@ -1,16 +1,16 @@
-package com.ps.mrecycler;
+package com.ps.mrecycler.entity;
 
 import com.ps.mrcyclerview.delegate.ItemDelegate;
+import com.ps.mrecycler.R;
 
 /**
- * Created by PengSong on 18/6/4.
+ * Created by PengSong on 18/8/3.
  */
 
-public class ContentEntity implements ItemDelegate {
-
+public class SwipeEntity implements ItemDelegate {
     private String name;
 
-    public ContentEntity(String name) {
+    public SwipeEntity(String name) {
         this.name = name;
     }
 
@@ -24,6 +24,6 @@ public class ContentEntity implements ItemDelegate {
 
     @Override
     public int getItemViewRes() {
-        return R.layout.item_content;
+        return R.layout.item_swipe_layout;
     }
 }

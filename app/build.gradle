@@ -22,9 +22,13 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation rootProject.ext.dependencies["appcompat-v7"]
     implementation rootProject.ext.dependencies["constraint-layout"]
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation rootProject.ext.dependencies["recyclerview-v7"]
     implementation project(':mrcyclerview')
+
+    implementation rootProject.ext.dependencies["swipelayout"]
+//    implementation 'com.github.ps130183:MRecycler:1.0'
 }

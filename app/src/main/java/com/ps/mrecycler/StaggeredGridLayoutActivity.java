@@ -1,8 +1,6 @@
 package com.ps.mrecycler;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,12 +19,13 @@ import com.ps.mrcyclerview.MRecyclerView;
 import com.ps.mrcyclerview.click.OnClickItemListener;
 import com.ps.mrcyclerview.click.OnLoadMoreErrorListener;
 import com.ps.mrcyclerview.click.OnLongClickItemListener;
+import com.ps.mrecycler.entity.MeinvEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class StaggeredGridLayoutActivity extends AppCompatActivity {
-    private MRecyclerView recyclerView;
+    private MRecyclerView<MeinvEntity> recyclerView;
     private int images[] = {R.drawable.meinv1,R.drawable.meinv2,R.drawable.meinv3,R.drawable.meinv4};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,46 +33,34 @@ public class StaggeredGridLayoutActivity extends AppCompatActivity {
         setContentView(R.layout.activity_staggered_grid_layout);
 
         recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.addContentLayout(R.layout.item_content_meinv, new ItemViewConvert() {
+        recyclerView.addContentLayout(R.layout.item_content_meinv, new ItemViewConvert<MeinvEntity>() {
             @Override
-            public void convert(@NonNull BViewHolder holder, Object mData, int position) {
+            public void convert(@NonNull BViewHolder holder, MeinvEntity mData, int position, @NonNull List<Object> payloads) {
                 holder.addRippleEffectOnClick();
-                MeinvEntity entity = (MeinvEntity) mData;
                 LinearLayout content = holder.findView(R.id.content);
                 ImageView image = holder.findView(R.id.image);
                 TextView name = holder.findView(R.id.name);
 
-
-//                //获取图片的宽高
-//                BitmapFactory.Options options = new BitmapFactory.Options();
-//                options.inJustDecodeBounds = true;
-//                Bitmap bitmap = BitmapFactory.decodeResource(StaggeredGridLayoutActivity.this.getResources(),entity.getImageRes(),options);
-//                int imageWidth = options.outWidth;
-//                int imageHeight = options.outHeight;
-//
-//                imageHeight = (imageWidth / getWidth()) * imageHeight;
-//
-//                content.getLayoutParams().height = imageHeight + 60;
                 image.getLayoutParams().height = ((position % 4 + 1) > 2 ?  (position % 4 + 1) * 60  : (position % 4 + 1) * 120) + 360;
 
 
 
-                image.setImageResource(entity.getImageRes());
-                name.setText(entity.getName());
-
-
-
+                image.setImageResource(mData.getImageRes());
+                name.setText(mData.getName());
             }
+
         }).addHeaderLayout(R.layout.header_view, new ItemViewConvert() {
             @Override
-            public void convert(@NonNull BViewHolder holder, Object mData, int position) {
+            public void convert(@NonNull BViewHolder holder, Object mData, int position, @NonNull List payloads) {
 
             }
+
         }).addFooterLayout(R.layout.header_view, new ItemViewConvert() {
             @Override
-            public void convert(@NonNull BViewHolder holder, Object mData, int position) {
+            public void convert(@NonNull BViewHolder holder, Object mData, int position, @NonNull List payloads) {
 
             }
+
         }).create();
         recyclerView.addLoadMoreListener(new LoadMoreListener() {
             @Override
@@ -81,7 +68,7 @@ public class StaggeredGridLayoutActivity extends AppCompatActivity {
                 if (nextPage == 2){
                     recyclerView.loadMoreError();
                 } else {
-                    recyclerView.update(getResult(nextPage));
+                    recyclerView.loadDataOfNextPage(getResult(nextPage));
                 }
 
             }
@@ -104,10 +91,10 @@ public class StaggeredGridLayoutActivity extends AppCompatActivity {
         recyclerView.addLoadMoreErrorListener(new OnLoadMoreErrorListener() {
             @Override
             public void loadMoreError(int nextPage) {
-                recyclerView.update(getResult(nextPage));
+                recyclerView.loadDataOfNextPage(getResult(nextPage));
             }
         });
-        recyclerView.update(getResult(1));
+        recyclerView.loadDataOfNextPage(getResult(1));
     }
 
     /**
@@ -115,8 +102,8 @@ public class StaggeredGridLayoutActivity extends AppCompatActivity {
      * @param nextPage
      * @return
      */
-    public List<Object> getResult(int nextPage){
-        List<Object> contentEntities = new ArrayList<>();
+    public List<MeinvEntity> getResult(int nextPage){
+        List<MeinvEntity> contentEntities = new ArrayList<>();
         int number = (nextPage < 3 ? nextPage*20 : (nextPage - 1) * 20 + 10);
         Log.d("MainActivity","当前页数据量：" + number);
         for (int i = (nextPage - 1) * 20; i < number; i++){

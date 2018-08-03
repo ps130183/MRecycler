@@ -16,14 +16,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.andview.refreshview.XRefreshView;
 import com.ps.mrcyclerview.click.OnClickItemListener;
 import com.ps.mrcyclerview.click.OnLoadMoreErrorListener;
 import com.ps.mrcyclerview.click.OnLongClickItemListener;
 import com.ps.mrcyclerview.delegate.MoreFinishDelegate;
-import com.ps.mrcyclerview.divider.Dp2Px;
 import com.ps.mrcyclerview.divider.GridDividerItemDecotation;
 import com.ps.mrcyclerview.divider.LinearDividerItemDecoration;
 import com.ps.mrcyclerview.divider.StaggeredGridDividerItemDecoration;
+import com.ps.mrcyclerview.refresh.CustomGifHeader;
+import com.ps.mrcyclerview.utils.RefreshUtils;
 
 import java.util.List;
 
@@ -31,7 +33,7 @@ import java.util.List;
  * Created by PengSong on 18/6/1.
  */
 
-public class MRecyclerView extends FrameLayout {
+public class MRecyclerView<D> extends FrameLayout {
 
     private static final String TAG = "MRecyclerView";
     private static final int LM_LINEAR = 0;
@@ -40,9 +42,11 @@ public class MRecyclerView extends FrameLayout {
     private static final int ORIENTATION_VERTICAL = 0;
     private static final int ORIENTATION_HORIZONTAL = 1;
 
+    private static final int ADAPTER_DEFAULT = 0;
+    private static final int ADAPTER_SWIPE = 1;
 
     private RecyclerView mRecyclerView;
-    private RecyclerAdapter mAdapter;
+    private IAdapter<D> mAdapter;
 
     private @LayoutRes int emptyRes;
     private View mEmptyView;
@@ -65,6 +69,13 @@ public class MRecyclerView extends FrameLayout {
     private int dividerWidth;
     private @ColorInt int dividerColor;
 
+    private int adapterType;
+
+    //下拉刷新
+    private XRefreshView mXRefreshView = null;
+    private boolean isRefresh;
+    private RefreshUtils.OnRefreshListener refreshListener;
+
 
     public MRecyclerView(Context context) {
         this(context,null);
@@ -80,7 +91,7 @@ public class MRecyclerView extends FrameLayout {
         loadMoreRes = ta.getResourceId(R.styleable.MRecyclerView_loadMoreLayout,R.layout.mr_load_more);
         loadMoreFinishRes = ta.getResourceId(R.styleable.MRecyclerView_loadMoreFinishLayout,R.layout.mr_load_more_finish);
         loadMoreErrorRes = ta.getResourceId(R.styleable.MRecyclerView_loadMoreErrorLayout,R.layout.mr_load_more_error);
-        emptyRes = ta.getResourceId(R.styleable.MRecyclerView_emptyLayout,R.layout.mr_empty);
+        emptyRes = ta.getResourceId(R.styleable.MRecyclerView_emptyLayout,-1);
         lmType = ta.getInt(R.styleable.MRecyclerView_lmType,LM_LINEAR);
         if (lmType == 0){
             orientation = ta.getInt(R.styleable.MRecyclerView_orientation, ORIENTATION_VERTICAL);
@@ -88,17 +99,33 @@ public class MRecyclerView extends FrameLayout {
         spanCount = ta.getInteger(R.styleable.MRecyclerView_spanCount,2);
         dividerWidth = ta.getInteger(R.styleable.MRecyclerView_dividerWidth, 1);
         dividerColor = ta.getColor(R.styleable.MRecyclerView_dividerColor,0xffefeff4);
+
+        adapterType = ta.getInt(R.styleable.MRecyclerView_adapterType,ADAPTER_DEFAULT);
+        isRefresh = ta.getBoolean(R.styleable.MRecyclerView_refresh,false);
         initRecycler();
     }
 
 
     private void initRecycler(){
-        mEmptyView = LayoutInflater.from(this.getContext()).inflate(emptyRes,this,false);
-        this.addView(mEmptyView,0);
+        if (emptyRes > 0){
+            mEmptyView = LayoutInflater.from(this.getContext()).inflate(emptyRes,this,false);
+            this.addView(mEmptyView);
+        }
+
         mRecyclerView = new RecyclerView(this.getContext());
         FrameLayout.LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
         mRecyclerView.setLayoutParams(lp);
-        this.addView(mRecyclerView,1);
+        if (isRefresh){
+            mXRefreshView = new XRefreshView(this.getContext());
+            LayoutParams lp1 = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
+            mXRefreshView.setLayoutParams(lp1);
+            this.addView(mXRefreshView);
+
+            mXRefreshView.addView(mRecyclerView);
+        } else {
+            this.addView(mRecyclerView);
+        }
+
 
         if (lmType == LM_LINEAR){
             addLinearLayoutManager(orientation == ORIENTATION_VERTICAL ? LinearLayoutManager.VERTICAL : LinearLayoutManager.HORIZONTAL);
@@ -114,7 +141,14 @@ public class MRecyclerView extends FrameLayout {
             throw new IllegalArgumentException("not find layoutManager,please setLayoutManager()");
         }
 
-        mAdapter = new RecyclerAdapter(this.getContext());
+        if (adapterType == ADAPTER_DEFAULT){
+            mAdapter = new RecyclerAdapter(this.getContext());
+        } else if (adapterType == ADAPTER_SWIPE){
+            mAdapter = new SRecyclerAdapter<>(this.getContext());
+        } else {
+            throw new IllegalArgumentException("没有找到adapterType,请选择一个adapterType");
+        }
+
         mAdapter.setMoreLayoutRes(loadMoreRes);
         mAdapter.setMoreFinishLayoutRes(loadMoreFinishRes);
         mAdapter.setMoreErrorLayoutRes(loadMoreErrorRes);
@@ -135,6 +169,74 @@ public class MRecyclerView extends FrameLayout {
         return this;
     }
 
+    public void addRefreshListener(final RefreshUtils.OnRefreshListener listener) {
+        this.refreshListener = listener;
+        if (isRefresh && refreshListener != null) {
+            initXRefreshView(mXRefreshView, listener);
+        }
+    }
+
+
+    private XRefreshView initXRefreshView(XRefreshView xRefreshView){
+        if (xRefreshView != null){
+            xRefreshView.setPullLoadEnable(false);
+            xRefreshView.setPullRefreshEnable(false);
+            xRefreshView.setAutoLoadMore(false);
+            xRefreshView.setPinnedTime(1000);
+            xRefreshView.setMoveForHorizontal(true);
+        }
+        return xRefreshView;
+    }
+
+    public void initXRefreshView(XRefreshView xRefreshView, final RefreshUtils.OnRefreshListener refreshListener){
+        if (xRefreshView == null){
+            throw new IllegalArgumentException("XRefreshView不能为null,请先设置XRefreshView");
+        }
+        initXRefreshView(xRefreshView);
+        xRefreshView.setPullRefreshEnable(true);//设置可以下拉刷新
+        xRefreshView.setCustomHeaderView(new CustomGifHeader(xRefreshView.getContext()));//样式
+        xRefreshView.setXRefreshViewListener(new XRefreshView.SimpleXRefreshListener(){
+            @Override
+            public void onRefresh(boolean isPullDown) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (refreshListener != null){
+                            refreshListener.refresh();
+                        }
+                    }
+                },2000);
+            }
+        });
+    }
+
+    public interface OnRefreshListener{
+        void refresh();
+    }
+
+
+
+    public XRefreshView getmXRefreshView() {
+        return mXRefreshView;
+    }
+
+    /**
+     * 开启刷新
+     */
+    public void startRefresh(){
+        if (isRefresh){
+            getmXRefreshView().startRefresh();
+        }
+    }
+
+    /**
+     * 停止刷新
+     */
+    public void stopRefresh(){
+        if (isRefresh && getmXRefreshView().mPullRefreshing){
+            getmXRefreshView().stopRefresh();
+        }
+    }
 
     /**
      * 网格布局
@@ -195,7 +297,7 @@ public class MRecyclerView extends FrameLayout {
     }
 
     public MRecyclerView create(){
-        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter((RecyclerView.Adapter) mAdapter);
         return this;
     }
 
@@ -241,29 +343,96 @@ public class MRecyclerView extends FrameLayout {
      * @param mDatas
      * @return
      */
-    public void update(List<Object> mDatas){
-        mAdapter.update(mDatas);
-        if (mAdapter.mDataSizeArray.size() == 0){
+    public void loadDataOfNextPage(List<D> mDatas){
+        mAdapter.loadDataOfNextPage(mDatas);
+        if (mAdapter.getDataSizeArray().size() == 0){
             mRecyclerView.setVisibility(GONE);
-            mEmptyView.setVisibility(VISIBLE);
-        } else if (mAdapter.mDataSizeArray.size() == 1){
+            if (mEmptyView != null){
+                mEmptyView.setVisibility(VISIBLE);
+            }
+        } else if (mAdapter.getDataSizeArray().size() == 1){
             mRecyclerView.setVisibility(VISIBLE);
-            mEmptyView.setVisibility(GONE);
+            if (mEmptyView != null){
+                mEmptyView.setVisibility(GONE);
+            }
         }
     }
 
+    /**
+     * 插入一条数据
+     * @param data
+     */
+    public void insert(D data){
+        mAdapter.insert(data);
+        moveToPosition(getDatasSize() - 1);
+    }
+
+    /**
+     * 更新数据
+     * @param data
+     * @param position
+     */
+    public void update(D data,int position,Object payLoads){
+        mAdapter.update(data,position,payLoads);
+    }
+
+    /**
+     * 删除数据
+     * @param position
+     */
+    public void delete(int position){
+        mAdapter.delete(position);
+    }
+
+
+    /**
+     * 删除数据
+     * @param data
+     */
+    public void delete(D data){
+        mAdapter.delete(data);
+    }
+
+    /**
+     * 获取当前数据
+     * @return
+     */
+    public List<D> getAllDatas(){
+        return mAdapter.getAllDatas();
+    }
+
+    /**
+     * 获取总数据量 大小
+     * @return
+     */
+    public int getDatasSize(){
+        return mAdapter.getDataSize();
+    }
+
+    public void moveToPosition(int position){
+        mRecyclerView.smoothScrollToPosition(position);
+    }
     /**
      * 清空数据
      */
     public void clear(){
         mAdapter.clear();
         mRecyclerView.setVisibility(GONE);
-        mEmptyView.setVisibility(VISIBLE);
+        if (mEmptyView != null){
+            mEmptyView.setVisibility(VISIBLE);
+        }
     }
 
+    /**
+     * 当列表滑动  监听
+     * @param onScrollListener
+     */
+    public void addOnScrollListener(RecyclerView.OnScrollListener onScrollListener){
+        mRecyclerView.addOnScrollListener(onScrollListener);
+    }
     public void addLoadMoreListener(LoadMoreListener loadMoreListener){
         mLoadMoreListener = loadMoreListener;
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -272,10 +441,10 @@ public class MRecyclerView extends FrameLayout {
                     LinearLayoutManager llm = (LinearLayoutManager) lm;
                     if (LinearLayoutManager.VERTICAL == llm.getOrientation()){//上下滑动
                         final int curLastVisibleItem = llm.findLastVisibleItemPosition();
-                        if (!mAdapter.isLoadMore() || mAdapter.moreDelegate instanceof MoreFinishDelegate){//已加载完所有数据
+                        if (!mAdapter.isLoadMore() || mAdapter.getMoreDelegate() instanceof MoreFinishDelegate){//已加载完所有数据
                             return;
                         }
-                        if (curLastVisibleItem >= mAdapter.getItemCount() - 3 && mAdapter.moreDelegate == null){
+                        if (curLastVisibleItem >= mAdapter.getItemCount() - 3 && mAdapter.getMoreDelegate() == null){
                             mAdapter.addMoreDelegate();
                             new Handler().postDelayed(new Runnable() {
                                 @Override
@@ -293,11 +462,11 @@ public class MRecyclerView extends FrameLayout {
                     int[] lastVisiblePositions = sglm.findLastVisibleItemPositions(new int[sglm.getSpanCount()]);
                     int lastVisiblePos = getMaxElem(lastVisiblePositions);
                     int totalItemCount = sglm.getItemCount();
-                    if (!mAdapter.isLoadMore() || mAdapter.moreDelegate instanceof MoreFinishDelegate){//已加载完所有数据
+                    if (!mAdapter.isLoadMore() || mAdapter.getMoreDelegate() instanceof MoreFinishDelegate){//已加载完所有数据
                         return;
                     }
                     // 判断是否滚动到底部
-                    if (lastVisiblePos == (totalItemCount - 1) && mAdapter.moreDelegate == null) {
+                    if (lastVisiblePos == (totalItemCount - 1) && mAdapter.getMoreDelegate() == null) {
                         //加载更多功能的代码
                         mAdapter.addMoreDelegate();
                         Log.d(TAG,"当前屏幕最下方的位置：" + lastVisiblePos);

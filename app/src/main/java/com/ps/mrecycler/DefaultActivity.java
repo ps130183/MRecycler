@@ -13,37 +13,39 @@ import com.ps.mrcyclerview.MRecyclerView;
 import com.ps.mrcyclerview.click.OnClickItemListener;
 import com.ps.mrcyclerview.click.OnLoadMoreErrorListener;
 import com.ps.mrcyclerview.click.OnLongClickItemListener;
+import com.ps.mrecycler.entity.ContentEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultActivity extends AppCompatActivity {
 
-    private MRecyclerView recyclerView;
+    private MRecyclerView<ContentEntity> recyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_default);
 
         recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.addContentLayout(R.layout.item_content, new ItemViewConvert() {
+        recyclerView.addContentLayout(R.layout.item_content, new ItemViewConvert<ContentEntity>() {
             @Override
-            public void convert(@NonNull BViewHolder holder, Object mData, int position) {
+            public void convert(@NonNull BViewHolder holder, ContentEntity mData, int position, @NonNull List<Object> payloads) {
                 holder.addRippleEffectOnClick();
-                ContentEntity entity = (ContentEntity) mData;
-                holder.setText(R.id.name,entity.getName());
+                holder.setText(R.id.name,mData.getName());
             }
-        }).addContentLayout(R.layout.item_content2, new ItemViewConvert() {
+
+        }).addContentLayout(R.layout.item_content2, new ItemViewConvert<ContentEntity>() {
             @Override
-            public void convert(@NonNull BViewHolder holder, Object mData, int position) {
-                ContentEntity2 entity = (ContentEntity2) mData;
-                holder.setText(R.id.name,entity.getName());
+            public void convert(@NonNull BViewHolder holder, ContentEntity mData, int position, @NonNull List<Object> payloads) {
+                holder.setText(R.id.name,mData.getName());
             }
+
         }).addHeaderLayout(R.layout.header_view, new ItemViewConvert() {
             @Override
-            public void convert(@NonNull BViewHolder holder, Object mData, int position) {
+            public void convert(@NonNull BViewHolder holder, Object mData, int position, @NonNull List payloads) {
 
             }
+
         }).create();
         recyclerView.addLoadMoreListener(new LoadMoreListener() {
             @Override
@@ -51,7 +53,7 @@ public class DefaultActivity extends AppCompatActivity {
                 if (nextPage == 2){
                     recyclerView.loadMoreError();
                 } else {
-                    recyclerView.update(getResult(nextPage));
+                    recyclerView.loadDataOfNextPage(getResult(nextPage));
                 }
 
             }
@@ -74,10 +76,10 @@ public class DefaultActivity extends AppCompatActivity {
         recyclerView.addLoadMoreErrorListener(new OnLoadMoreErrorListener() {
             @Override
             public void loadMoreError(int nextPage) {
-                recyclerView.update(getResult(nextPage));
+                recyclerView.loadDataOfNextPage(getResult(nextPage));
             }
         });
-        recyclerView.update(getResult(1));
+        recyclerView.loadDataOfNextPage(getResult(1));
     }
 
     /**
@@ -85,15 +87,15 @@ public class DefaultActivity extends AppCompatActivity {
      * @param nextPage
      * @return
      */
-    public List<Object> getResult(int nextPage){
-        List<Object> contentEntities = new ArrayList<>();
+    public List<ContentEntity> getResult(int nextPage){
+        List<ContentEntity> contentEntities = new ArrayList<>();
         int number = (nextPage < 3 ? nextPage*20 : (nextPage - 1) * 20 + 10);
         Log.d("MainActivity","当前页数据量：" + number);
         for (int i = (nextPage - 1) * 20; i < number; i++){
             if (i % 2 == 0){
-                contentEntities.add(new ContentEntity("第" + i + "条数据"));
+                contentEntities.add(new ContentEntity("第" + i + "条数据",R.layout.item_content));
             } else {
-                contentEntities.add(new ContentEntity2("第" + i + "条数据"));
+                contentEntities.add(new ContentEntity("第" + i + "条数据",R.layout.item_content2));
             }
         }
         return contentEntities;

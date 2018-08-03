@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
+import com.ps.mrcyclerview.IAdapter;
 import com.ps.mrcyclerview.RecyclerAdapter;
 
 /**
@@ -33,7 +34,7 @@ public class StaggeredGridDividerItemDecoration extends Y_DividerItemDecoration 
     @Nullable
     @Override
     public Y_Divider getDivider(int itemPosition) {
-        RecyclerAdapter adapter = (RecyclerAdapter) mRecyclerView.getAdapter();
+        IAdapter adapter = (IAdapter) mRecyclerView.getAdapter();
         if (adapter.isContentView(itemPosition)){
             return new Y_DividerBuilder()
                     .setLeftSideLine(true, dividerColor, dividerWidth, 0, 0)

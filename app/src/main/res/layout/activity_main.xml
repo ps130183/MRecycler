@@ -7,21 +7,28 @@
     android:orientation="vertical"
     tools:context="com.ps.mrecycler.MainActivity">
 
-    <Button
+    <com.ps.mrcyclerview.MRecyclerView
+        android:id="@+id/mrecycler"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="默认"
-        android:onClick="defaultRecycler"/>
+        android:layout_height="wrap_content">
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="网格布局"
-        android:onClick="gridLayoutRecycler"/>
+    </com.ps.mrcyclerview.MRecyclerView>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="瀑布流"
-        android:onClick="staggeredGridLayoutRecycler"/>
+    <!--<Button-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="默认"-->
+        <!--android:onClick="defaultRecycler"/>-->
+
+    <!--<Button-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="网格布局"-->
+        <!--android:onClick="gridLayoutRecycler"/>-->
+
+    <!--<Button-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="瀑布流"-->
+        <!--android:onClick="staggeredGridLayoutRecycler"/>-->
 </LinearLayout>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.daimajia.swipe.SwipeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipe_layout"
+    android:layout_width="match_parent"
+    android:layout_height="80dp">
+
+    <TextView
+        android:id="@+id/remove"
+        android:layout_width="60dp"
+        android:layout_height="match_parent"
+        android:text="删除"
+        android:textSize="18sp"
+        android:textColor="#fff"
+        android:background="#ff0000"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="主内容区域"
+        android:textSize="16sp"
+        android:textColor="#191919"
+        android:padding="16dp"
+        android:background="#ffffff"
+        />
+
+</com.daimajia.swipe.SwipeLayout>

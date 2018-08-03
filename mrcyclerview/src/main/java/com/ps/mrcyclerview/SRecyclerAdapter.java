@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
-import android.support.v7.view.menu.MenuAdapter;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -13,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
 import com.ps.mrcyclerview.click.OnClickItemListener;
 import com.ps.mrcyclerview.click.OnLoadMoreErrorListener;
 import com.ps.mrcyclerview.click.OnLongClickItemListener;
@@ -30,10 +30,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by PengSong on 18/6/1.
+ * Created by PengSong on 18/7/13.
  */
 
-public class RecyclerAdapter<D> extends RecyclerView.Adapter<BViewHolder> implements IAdapter<D> {
+public class SRecyclerAdapter<D> extends RecyclerSwipeAdapter<BViewHolder> implements IAdapter<D> {
 
     private static final String TAG = "RecyclerAdapter";
     private Context mContext;
@@ -54,7 +54,8 @@ public class RecyclerAdapter<D> extends RecyclerView.Adapter<BViewHolder> implem
 
     //加载更多
     protected MoreDelegate moreDelegate;
-    private @LayoutRes int moreLayoutRes;
+    private @LayoutRes
+    int moreLayoutRes;
     private @LayoutRes int moreFinishLayoutRes;
     private @LayoutRes int moreErrorLayoutRes;
     private boolean loadMore = true;//是否有加载更多 默认true  有
@@ -66,8 +67,7 @@ public class RecyclerAdapter<D> extends RecyclerView.Adapter<BViewHolder> implem
     private OnLongClickItemListener onLongClickItemListener;
     private OnLoadMoreErrorListener onLoadMoreErrorListener;
 
-
-    public RecyclerAdapter(Context mContext) {
+    public SRecyclerAdapter(Context mContext) {
         this.mContext = mContext;
         mDatas = new ArrayList<>();
         mContentLayouts = new HashMap<>();
@@ -75,16 +75,14 @@ public class RecyclerAdapter<D> extends RecyclerView.Adapter<BViewHolder> implem
         mDataSizeArray = new SparseArray<>();
     }
 
-    @NonNull
     @Override
-    public BViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public BViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType <= 0){
             throw new LayoutNotFoundException("找不到相应的布局文件");
         }
         View itemView = LayoutInflater.from(mContext)
                 .inflate(viewType,parent,false);
         return new BViewHolder(mContext,itemView);
-
     }
 
     @Override
@@ -166,7 +164,6 @@ public class RecyclerAdapter<D> extends RecyclerView.Adapter<BViewHolder> implem
         }
         return count;
     }
-
 
     @Override
     public int getItemViewType(int position) {
@@ -388,7 +385,7 @@ public class RecyclerAdapter<D> extends RecyclerView.Adapter<BViewHolder> implem
      */
     public void delete(int position){
         if (position >= 0 && position < getDataSize()){
-            int headerCount = mHeaderDelegates == null ? 0 : mHeaderDelegates.size();
+            int headerCount = mHeaderDelegates.size();
             mDatas.remove(position);
             notifyItemRemoved(position + headerCount);
             notifyItemRangeChanged(position + headerCount,mDatas.size() - position);
@@ -605,5 +602,10 @@ public class RecyclerAdapter<D> extends RecyclerView.Adapter<BViewHolder> implem
      */
     public int getHeaderSize(){
         return mHeaderDelegates == null ? 0 : mHeaderDelegates.size();
+    }
+
+    @Override
+    public int getSwipeLayoutResourceId(int position) {
+        return R.id.swipe_layout;
     }
 }
