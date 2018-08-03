@@ -1,7 +1,7 @@
 
 # MRecycler
 MrecyclerView介绍
-接触Android也收5年左右了，这么长的时间里用过各种各样的列表，有自己写的，也有第三方的，功能也各有不同。总之，就是没有一种能完全符合工作中的需要，因此也就有了写这个控件的原始想法。接下来就说说这个控件的作用。
+接触Android也有5年左右了，这么长的时间里用过各种各样的列表，有自己写的，也有第三方的，功能也各有不同。总之，就是没有一种能完全符合工作中的需要，因此也就有了写这个控件的原始想法。接下来就说说这个控件的作用。
 
 # 简单介绍
 这个控件的初衷是希望有这样一个列表，只要设置数据和显示数据的布局就可以展示列表的数据，不用再频繁的写Adapter,ViewHolder等等。。。简化写列表的流程。
@@ -35,6 +35,8 @@ Step 2. Add the dependency<br>
 | spanCount | lmType!=linear时，每行所包含的item数量      |    2 |
 | dividerWidth | 分割线的宽度      |    1dp |
 | dividerColor | 分割线的颜色      |    0xffefeff4 |
+| adapterType | adapter的类型，目前有一般常用的adapter（def）,和 带侧滑的adapter两种(swipe)      |    def |
+| refresh | 是否需要下拉刷新,默认false不需要      |    false |
 
 注意：<br>
 1、以上属性需要在xml布局文件中设置<br>
